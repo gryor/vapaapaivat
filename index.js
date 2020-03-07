@@ -1,6 +1,6 @@
 class Paivamaara extends Date {
   toString() {
-    return this.toLocaleDateString();
+    return this.toLocaleDateString('fi-FI');
   }
 
   edellinen_viikonpaiva(viikonpaiva) {
