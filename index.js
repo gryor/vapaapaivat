@@ -62,6 +62,7 @@ class Vapaapaivat {
     m.set("Jouluaatto", this.jouluaatto);
     m.set("Joulupäivä", this.joulupaiva);
     m.set("2. joulupäivä", this.toinen_joulupaiva);
+    m.set("Uudenvuodenaatto", this.uudenvuodenaatto);
 
     return m;
   }
@@ -170,5 +171,9 @@ class Vapaapaivat {
 
   get toinen_joulupaiva() {
     return new Paivamaara(this.year, 11, 26);
+  }
+
+  get uudenvuodenaatto() {
+    return new Paivamaara(this.year, 11, 31);
   }
 }
