@@ -66,6 +66,16 @@ class Vapaapaivat {
     return m;
   }
 
+  get map_reversed() {
+    const m = this.map;
+    const n = new Map();
+
+    for(const [key, value] of m)
+      n.set(value, key);
+
+    return n;
+  }
+
   get uudenvuodenpaiva() {
     return new Paivamaara(this.year, 0, 1);
   }
