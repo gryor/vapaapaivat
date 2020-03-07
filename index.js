@@ -66,8 +66,28 @@ class Vapaapaivat {
     return m;
   }
 
+  get map_strings() {
+    const m = this.map;
+    const n = new Map();
+
+    for(const [key, value] of m)
+      n.set(key, value.toString());
+
+    return n;
+  }
+
   get map_reversed() {
     const m = this.map;
+    const n = new Map();
+
+    for(const [key, value] of m)
+      n.set(value, key);
+
+    return n;
+  }
+
+  get map_strings_reversed() {
+    const m = this.map_strings;
     const n = new Map();
 
     for(const [key, value] of m)
