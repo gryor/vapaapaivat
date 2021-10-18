@@ -1,3 +1,48 @@
+function capitalize(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function getWeekdaysOfYear(year, days) {
+  const current = moment([year]);
+  const end = moment([year]).endOf('year');
+  const output = [];
+  
+  while(current.isSameOrBefore(end)) {
+    if(days === undefined) {
+       output.push(current.format('D.M.YYYY'));
+    } else {
+      if(days.includes(current.weekday()))
+        output.push(current.format('D.M.YYYY'));
+    } 
+      
+    
+    current.add(1, 'day');
+  }
+  
+  return output;
+}
+
+function getDutyDays(year) {
+  moment.locale('fi');
+  year = +year;
+  const holidays = (new Vapaapaivat(year)).map_strings_reversed;
+  //const weekends = getWeekdaysOfYear(year, [4,5,6]);
+  const everyday = getWeekdaysOfYear(year);
+  let output = [];
+  
+  holidays.forEach((value, key) => holidays.set(key, {dayOfWeek: capitalize(moment(key, 'D.M.YYYY').format('dddd')), description: value}));
+  
+  output = Array.from(holidays).map(e => [e[0], e[1].dayOfWeek, e[1].description]);
+
+  //weekends.filter(e => !holidays.has(e)).forEach(e => output.push([e, capitalize(moment(e, 'D.M.YYYY').format('dddd'))]));
+  everyday.filter(e => !holidays.has(e)).forEach(e => output.push([e, capitalize(moment(e, 'D.M.YYYY').format('dddd'))]));
+
+  output.sort((a, b) => moment(a[0], 'D.M.YYYY').isBefore(moment(b[0], 'D.M.YYYY')) ? -1 : 1);
+
+  console.log({year, output});
+  return output;
+}
+               
 class Paivamaara extends Date {
   toString() {
     return this.toLocaleDateString('fi-FI');
@@ -48,17 +93,24 @@ class Vapaapaivat {
     const m = new Map();
 
     m.set("Uudenvuodenpäivä", this.uudenvuodenpaiva);
+    m.set("Loppiaisaatto", this.loppiaisaatto);
     m.set("Loppiainen", this.loppiainen);
+    m.set("Pitkäperjantain aatto", this.pitkaperjantainaatto);
     m.set("Pitkäperjantai", this.pitkaperjantai);
     m.set("Pääsiäispäivä", this.paasiaispaiva);
     m.set("2. pääsiäispäivä", this.toinen_paasiaispaiva);
+    m.set("Vappuaatto", this.vappuaatto);
     m.set("Vappu", this.vappu);
+    m.set("Helatorstain aatto", this.helatorstainaatto);
     m.set("Helatorstai", this.helatorstai);
     m.set("Helluntaipäivä", this.helluntaipaiva);
+    m.set("Juhannusaaton aatto", this.juhannusaatonaatto);
     m.set("Juhannusaatto", this.juhannusaatto);
     m.set("Juhannuspäivä", this.juhannuspaiva);
     m.set("Pyhäinpäivä", this.pyhainpaiva);
+    m.set("Itsenäisyyspäivän aatto", this.itsenaisyyspaivanaatto);
     m.set("Itsenäisyyspäivä", this.itsenaisyyspaiva);
+    m.set("Jouluaaton aatto", this.jouluaatonaatto);
     m.set("Jouluaatto", this.jouluaatto);
     m.set("Joulupäivä", this.joulupaiva);
     m.set("2. joulupäivä", this.toinen_joulupaiva);
@@ -101,8 +153,16 @@ class Vapaapaivat {
     return new Paivamaara(this.year, 0, 1);
   }
 
+  get loppiaisaatto() {
+    return this.loppiainen.edellinen_paiva;
+  }
+
   get loppiainen() {
     return new Paivamaara(this.year, 0, 6);
+  }
+
+  get pitkaperjantainaatto() {
+    return this.pitkaperjantai.edellinen_paiva;
   }
 
   get pitkaperjantai() {
@@ -133,8 +193,16 @@ class Vapaapaivat {
     return this.paasiaispaiva.seuraava_viikonpaiva(1);
   }
 
+  get vappuaatto() {
+    return this.vappu.edellinen_paiva;
+  }
+
   get vappu() {
     return new Paivamaara(this.year, 4, 1);
+  }
+
+  get helatorstainaatto() {
+    return this.helatorstai.edellinen_paiva;
   }
 
   get helatorstai() {
@@ -143,6 +211,10 @@ class Vapaapaivat {
 
   get helluntaipaiva() {
     return this.paasiaispaiva.lisaa_paivia(49);
+  }
+
+  get juhannusaatonaatto() {
+    return this.juhannusaatto.edellinen_paiva;
   }
 
   get juhannusaatto() {
@@ -157,8 +229,16 @@ class Vapaapaivat {
     return (new Paivamaara(this.year, 9, 31)).seuraava_viikonpaiva(6);
   }
 
+  get itsenaisyyspaivanaatto() {
+    return this.itsenaisyyspaiva.edellinen_paiva;
+  }
+
   get itsenaisyyspaiva() {
     return new Paivamaara(this.year, 11, 6);
+  }
+
+  get jouluaatonaatto() {
+    return this.jouluaatto.edellinen_paiva;
   }
 
   get jouluaatto() {
